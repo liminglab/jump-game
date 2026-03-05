@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Stick Hero - 小游戏</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stick Hero - 棍子英雄</title>
     <style>
         * {
             margin: 0;
@@ -17,137 +17,87 @@
             align-items: center;
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
         }
 
-        #game-container {
+        #gameContainer {
             position: relative;
             width: 100%;
             max-width: 400px;
-            height: 100vh;
-            max-height: 700px;
-            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            height: 600px;
+            background: #87CEEB;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
-        #game-canvas {
+        canvas {
             display: block;
             width: 100%;
             height: 100%;
         }
 
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        #score {
+        #ui {
             position: absolute;
             top: 20px;
             left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .score-box {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
             font-size: 24px;
             font-weight: bold;
             color: #333;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        #best-score {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 18px;
-            color: #666;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-        }
-
-        #game-over {
+        #gameOver {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
             display: none;
-            pointer-events: auto;
+            z-index: 20;
         }
 
-        #game-over h2 {
-            font-size: 36px;
-            color: #e74c3c;
+        #gameOver h2 {
+            font-size: 48px;
+            color: #ff4757;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        #game-over p {
-            font-size: 20px;
-            color: #333;
+        #gameOver p {
+            font-size: 24px;
+            color: #fff;
             margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
 
-        #restart-btn {
+        #restartBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
             padding: 15px 40px;
             font-size: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
+            border-radius: 30px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
 
-        #restart-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-
-        #restart-btn:active {
-            transform: scale(0.95);
-        }
-
-        #start-screen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            pointer-events: auto;
-        }
-
-        #start-screen h1 {
-            font-size: 40px;
-            color: #667eea;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        #start-screen p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        #start-btn {
-            padding: 15px 50px;
-            font-size: 22px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        #start-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        #restartBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
 
         #instructions {
@@ -155,421 +105,378 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 14px;
-            color: #666;
+            color: white;
+            font-size: 16px;
             text-align: center;
-            white-space: nowrap;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            z-index: 10;
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="game-canvas"></canvas>
-        <div id="ui-layer">
-            <div id="score">得分: 0</div>
-            <div id="best-score">最高分: 0</div>
-            <div id="start-screen">
-                <h1>🎮 Stick Hero</h1>
-                <p>按住屏幕伸长棍子，松开倒下成桥</p>
-                <button id="start-btn">开始游戏</button>
-            </div>
-            <div id="game-over">
-                <h2>游戏结束!</h2>
-                <p>得分: <span id="final-score">0</span></p>
-                <button id="restart-btn">再来一次</button>
-            </div>
-            <div id="instructions">按住屏幕伸长棍子，松开倒下</div>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui">
+            <div class="score-box">分数: <span id="score">0</span></div>
+            <div class="score-box">最高: <span id="highScore">0</span></div>
         </div>
+        <div id="gameOver">
+            <h2>游戏结束!</h2>
+            <p>得分: <span id="finalScore">0</span></p>
+            <button id="restartBtn">重新开始</button>
+        </div>
+        <div id="instructions">按住屏幕伸长棍子，松开让棍子倒下</div>
     </div>
 
     <script>
-        const canvas = document.getElementById('game-canvas');
+        const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
-        const bestScoreElement = document.getElementById('best-score');
-        const gameOverScreen = document.getElementById('game-over');
-        const finalScoreElement = document.getElementById('final-score');
-        const restartBtn = document.getElementById('restart-btn');
-        const startScreen = document.getElementById('start-screen');
-        const startBtn = document.getElementById('start-btn');
-        const instructions = document.getElementById('instructions');
+        const highScoreElement = document.getElementById('highScore');
+        const finalScoreElement = document.getElementById('finalScore');
+        const gameOverElement = document.getElementById('gameOver');
+        const restartBtn = document.getElementById('restartBtn');
 
-        // 游戏状态
-        let gameState = 'start'; // start, playing, falling, walking, gameover
-        let score = 0;
-        let bestScore = localStorage.getItem('stickHeroBestScore') || 0;
-        bestScoreElement.textContent = `最高分: ${bestScore}`;
-
-        // 游戏对象
-        let platforms = [];
-        let stick = null;
-        let hero = null;
-        let camera = { x: 0 };
-
-        // 配置
-        const CONFIG = {
-            platformHeight: 200,
-            platformMinWidth: 30,
-            platformMaxWidth: 80,
-            platformMinGap: 50,
-            platformMaxGap: 200,
-            stickWidth: 6,
-            stickGrowSpeed: 4,
-            heroSpeed: 3,
-            heroSize: 20,
-            gravity: 0.5
-        };
-
-        // 调整画布大小
+        // 设置画布大小
         function resizeCanvas() {
-            const container = document.getElementById('game-container');
+            const container = document.getElementById('gameContainer');
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
         }
-
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // 平台类
-        class Platform {
-            constructor(x, width) {
-                this.x = x;
-                this.y = canvas.height - CONFIG.platformHeight;
-                this.width = width;
-                this.height = CONFIG.platformHeight;
+        // 游戏状态
+        let gameState = 'waiting'; // waiting, stretching, falling, walking, gameover
+        let score = 0;
+        let highScore = localStorage.getItem('stickHeroHighScore') || 0;
+        highScoreElement.textContent = highScore;
+
+        // 平台配置
+        const platforms = [];
+        const platformWidth = 60;
+        const platformHeight = 150;
+        const groundY = canvas.height - 100;
+
+        // 棍子配置
+        let stick = {
+            x: 0,
+            y: groundY,
+            length: 0,
+            angle: 0,
+            width: 6
+        };
+
+        // 角色配置
+        let hero = {
+            x: 0,
+            y: groundY - 40,
+            width: 30,
+            height: 40,
+            speed: 5
+        };
+
+        // 当前平台索引
+        let currentPlatformIndex = 0;
+
+        // 初始化平台
+        function initPlatforms() {
+            platforms.length = 0;
+            // 第一个平台
+            platforms.push({
+                x: 50,
+                width: platformWidth,
+                height: platformHeight
+            });
+
+            // 生成后续平台
+            for (let i = 1; i < 10; i++) {
+                const prevPlatform = platforms[i - 1];
+                const gap = 80 + Math.random() * 150;
+                const width = 40 + Math.random() * 50;
+
+                platforms.push({
+                    x: prevPlatform.x + prevPlatform.width + gap,
+                    width: width,
+                    height: platformHeight
+                });
             }
 
-            draw() {
-                const drawX = this.x - camera.x;
-
-                // 平台主体
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(drawX, this.y, this.width, this.height);
-
-                // 平台顶部
-                ctx.fillStyle = '#228B22';
-                ctx.fillRect(drawX, this.y, this.width, 10);
-
-                // 平台侧面阴影
-                ctx.fillStyle = 'rgba(0,0,0,0.2)';
-                ctx.fillRect(drawX + this.width - 5, this.y, 5, this.height);
-            }
+            currentPlatformIndex = 0;
+            updateHeroPosition();
         }
 
-        // 棍子类
-        class Stick {
-            constructor(x) {
-                this.x = x;
-                this.y = canvas.height - CONFIG.platformHeight;
-                this.width = CONFIG.stickWidth;
-                this.height = 0;
-                this.angle = 0;
-                this.state = 'growing'; // growing, falling, fallen
-                this.maxHeight = canvas.height * 0.8;
-            }
-
-            grow() {
-                if (this.state === 'growing' && this.height < this.maxHeight) {
-                    this.height += CONFIG.stickGrowSpeed;
-                }
-            }
-
-            fall() {
-                if (this.state === 'growing') {
-                    this.state = 'falling';
-                }
-            }
-
-            update() {
-                if (this.state === 'falling') {
-                    this.angle += 0.08;
-                    if (this.angle >= Math.PI / 2) {
-                        this.angle = Math.PI / 2;
-                        this.state = 'fallen';
-                        return true; // 倒下完成
-                    }
-                }
-                return false;
-            }
-
-            draw() {
-                const drawX = this.x - camera.x;
-
-                ctx.save();
-                ctx.translate(drawX, this.y);
-                ctx.rotate(this.angle);
-
-                // 棍子主体
-                ctx.fillStyle = '#DEB887';
-                ctx.fillRect(-this.width / 2, -this.height, this.width, this.height);
-
-                // 棍子顶部
-                ctx.fillStyle = '#D2691E';
-                ctx.fillRect(-this.width / 2, -this.height - 3, this.width, 3);
-
-                ctx.restore();
-            }
-
-            getTipX() {
-                return this.x + Math.cos(this.angle) * this.height;
-            }
+        // 更新角色位置
+        function updateHeroPosition() {
+            const currentPlatform = platforms[currentPlatformIndex];
+            hero.x = currentPlatform.x + currentPlatform.width / 2 - hero.width / 2;
         }
 
-        // 英雄类
-        class Hero {
-            constructor(platform) {
-                this.x = platform.x + platform.width / 2;
-                this.y = canvas.height - CONFIG.platformHeight - CONFIG.heroSize;
-                this.size = CONFIG.heroSize;
-                this.targetX = null;
-                this.walking = false;
-                this.falling = false;
-                this.fallSpeed = 0;
-            }
-
-            walk(targetX) {
-                this.targetX = targetX;
-                this.walking = true;
-            }
-
-            fall() {
-                this.falling = true;
-                this.fallSpeed = 0;
-            }
-
-            update() {
-                if (this.walking) {
-                    const dx = this.targetX - this.x;
-                    if (Math.abs(dx) > CONFIG.heroSpeed) {
-                        this.x += Math.sign(dx) * CONFIG.heroSpeed;
-                    } else {
-                        this.x = this.targetX;
-                        this.walking = false;
-                        return true; // 走到目标
-                    }
-                }
-
-                if (this.falling) {
-                    this.fallSpeed += CONFIG.gravity;
-                    this.y += this.fallSpeed;
-                    if (this.y > canvas.height) {
-                        return 'dead';
-                    }
-                }
-
-                return false;
-            }
-
-            draw() {
-                const drawX = this.x - camera.x;
-
-                // 身体
-                ctx.fillStyle = '#FF6B6B';
-                ctx.beginPath();
-                ctx.arc(drawX, this.y + this.size / 2, this.size / 2, 0, Math.PI * 2);
-                ctx.fill();
-
-                // 眼睛
-                ctx.fillStyle = 'white';
-                ctx.beginPath();
-                ctx.arc(drawX - 3, this.y + this.size / 2 - 2, 3, 0, Math.PI * 2);
-                ctx.arc(drawX + 3, this.y + this.size / 2 - 2, 3, 0, Math.PI * 2);
-                ctx.fill();
-
-                // 眼珠
-                ctx.fillStyle = 'black';
-                ctx.beginPath();
-                ctx.arc(drawX - 3, this.y + this.size / 2 - 2, 1.5, 0, Math.PI * 2);
-                ctx.arc(drawX + 3, this.y + this.size / 2 - 2, 1.5, 0, Math.PI * 2);
-                ctx.fill();
-
-                // 嘴巴
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(drawX, this.y + this.size / 2 + 2, 4, 0, Math.PI);
-                ctx.stroke();
-            }
+        // 重置棍子
+        function resetStick() {
+            const currentPlatform = platforms[currentPlatformIndex];
+            stick.x = currentPlatform.x + currentPlatform.width;
+            stick.y = groundY;
+            stick.length = 0;
+            stick.angle = 0;
         }
 
-        // 生成新平台
-        function generatePlatform(x) {
-            const width = CONFIG.platformMinWidth + Math.random() * (CONFIG.platformMaxWidth - CONFIG.platformMinWidth);
-            const gap = CONFIG.platformMinGap + Math.random() * (CONFIG.platformMaxGap - CONFIG.platformMinGap);
-            return new Platform(x + gap, width);
-        }
-
-        // 初始化游戏
-        function initGame() {
-            platforms = [];
-            platforms.push(new Platform(50, 60));
-            platforms.push(generatePlatform(110));
-
-            stick = null;
-            hero = new Hero(platforms[0]);
-            camera.x = 0;
-            score = 0;
-            scoreElement.textContent = `得分: ${score}`;
-            gameState = 'playing';
-        }
-
-        // 检查是否成功
-        function checkSuccess() {
-            const currentPlatform = platforms[platforms.length - 2];
-            const nextPlatform = platforms[platforms.length - 1];
-            const stickTip = stick.getTipX();
-
-            const nextPlatformStart = nextPlatform.x;
-            const nextPlatformEnd = nextPlatform.x + nextPlatform.width;
-
-            if (stickTip >= nextPlatformStart && stickTip <= nextPlatformEnd) {
-                // 成功
-                hero.walk(stickTip);
-                return true;
-            } else {
-                // 失败
-                hero.fall();
-                return false;
-            }
-        }
-
-        // 游戏循环
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 绘制背景
+        // 绘制背景
+        function drawBackground() {
+            // 天空渐变
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(1, '#E0F7FA');
+            gradient.addColorStop(1, '#E0F6FF');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 更新相机
-            if (hero && hero.x > camera.x + canvas.width * 0.4) {
-                camera.x = hero.x - canvas.width * 0.4;
-            }
+            // 云朵
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            drawCloud(100, 80, 60);
+            drawCloud(300, 120, 40);
+            drawCloud(200, 50, 50);
+        }
 
-            // 绘制平台
-            platforms.forEach(platform => platform.draw());
+        // 绘制云朵
+        function drawCloud(x, y, size) {
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.arc(x + size * 0.8, y - size * 0.2, size * 0.7, 0, Math.PI * 2);
+            ctx.arc(x + size * 1.5, y, size * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-            // 更新和绘制棍子
-            if (stick) {
-                const fallen = stick.update();
-                stick.draw();
+        // 绘制平台
+        function drawPlatforms() {
+            platforms.forEach((platform, index) => {
+                // 平台主体
+                const gradient = ctx.createLinearGradient(platform.x, groundY, platform.x, groundY + platform.height);
+                gradient.addColorStop(0, '#8B4513');
+                gradient.addColorStop(1, '#654321');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(platform.x, groundY, platform.width, platform.height);
 
-                if (fallen && gameState === 'playing') {
-                    const success = checkSuccess();
-                    if (!success) {
-                        gameState = 'falling';
-                    }
-                }
-            }
+                // 平台顶部
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(platform.x, groundY, platform.width, 10);
 
-            // 更新和绘制英雄
-            if (hero) {
-                const result = hero.update();
-                hero.draw();
+                // 平台边框
+                ctx.strokeStyle = '#5D3A1A';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(platform.x, groundY, platform.width, platform.height);
+            });
+        }
 
-                if (result === 'dead') {
-                    gameState = 'gameover';
-                    showGameOver();
-                } else if (result === true) {
-                    // 英雄走到目标
-                    if (gameState === 'playing') {
-                        score++;
-                        scoreElement.textContent = `得分: ${score}`;
+        // 绘制棍子
+        function drawStick() {
+            ctx.save();
+            ctx.translate(stick.x, stick.y);
+            ctx.rotate(stick.angle);
 
-                        // 生成新平台
-                        const lastPlatform = platforms[platforms.length - 1];
-                        platforms.push(generatePlatform(lastPlatform.x + lastPlatform.width));
+            // 棍子主体
+            const gradient = ctx.createLinearGradient(0, 0, 0, -stick.length);
+            gradient.addColorStop(0, '#8B4513');
+            gradient.addColorStop(1, '#D2691E');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(-stick.width / 2, -stick.length, stick.width, stick.length);
 
-                        // 移除旧平台
-                        if (platforms.length > 4) {
-                            platforms.shift();
-                        }
+            // 棍子头部
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.arc(0, -stick.length, stick.width / 2 + 2, 0, Math.PI * 2);
+            ctx.fill();
 
-                        // 准备下一轮
-                        const currentPlatform = platforms[platforms.length - 2];
-                        stick = new Stick(currentPlatform.x + currentPlatform.width);
-                    }
-                }
-            }
+            ctx.restore();
+        }
+
+        // 绘制角色
+        function drawHero() {
+            // 身体
+            ctx.fillStyle = '#FF6B6B';
+            ctx.fillRect(hero.x, hero.y, hero.width, hero.height);
+
+            // 头部
+            ctx.fillStyle = '#FFE66D';
+            ctx.beginPath();
+            ctx.arc(hero.x + hero.width / 2, hero.y - 10, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 眼睛
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(hero.x + hero.width / 2 - 5, hero.y - 12, 3, 0, Math.PI * 2);
+            ctx.arc(hero.x + hero.width / 2 + 5, hero.y - 12, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 微笑
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(hero.x + hero.width / 2, hero.y - 8, 6, 0, Math.PI);
+            ctx.stroke();
+        }
+
+        // 绘制分数
+        function drawScore() {
+            scoreElement.textContent = score;
+        }
+
+        // 游戏主循环
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBackground();
+            drawPlatforms();
+            drawStick();
+            drawHero();
+            drawScore();
+
+            updateGame();
 
             requestAnimationFrame(gameLoop);
         }
 
-        // 显示游戏结束
-        function showGameOver() {
-            finalScoreElement.textContent = score;
-            gameOverScreen.style.display = 'block';
-            instructions.style.display = 'none';
+        // 更新游戏逻辑
+        function updateGame() {
+            if (gameState === 'stretching') {
+                stick.length += 3;
+            } else if (gameState === 'falling') {
+                stick.angle += 0.05;
+                if (stick.angle >= Math.PI / 2) {
+                    stick.angle = Math.PI / 2;
+                    gameState = 'walking';
+                    checkSuccess();
+                }
+            } else if (gameState === 'walking') {
+                hero.x += hero.speed;
 
-            if (score > bestScore) {
-                bestScore = score;
-                localStorage.setItem('stickHeroBestScore', bestScore);
-                bestScoreElement.textContent = `最高分: ${bestScore}`;
+                const currentPlatform = platforms[currentPlatformIndex];
+                const nextPlatform = platforms[currentPlatformIndex + 1];
+
+                // 检查是否走到下一个平台
+                if (hero.x + hero.width >= nextPlatform.x &&
+                    hero.x < nextPlatform.x + nextPlatform.width) {
+                    // 成功到达下一个平台
+                    score++;
+                    currentPlatformIndex++;
+
+                    // 移动所有平台
+                    const shift = nextPlatform.x - 50;
+                    platforms.forEach(p => p.x -= shift);
+                    hero.x -= shift;
+                    stick.x -= shift;
+
+                    // 生成新平台
+                    const lastPlatform = platforms[platforms.length - 1];
+                    const gap = 80 + Math.random() * 150;
+                    const width = 40 + Math.random() * 50;
+                    platforms.push({
+                        x: lastPlatform.x + lastPlatform.width + gap,
+                        width: width,
+                        height: platformHeight
+                    });
+
+                    // 移除过远的平台
+                    if (platforms.length > 10) {
+                        platforms.shift();
+                        currentPlatformIndex--;
+                    }
+
+                    gameState = 'waiting';
+                    resetStick();
+                } else if (hero.x > canvas.width) {
+                    // 掉出屏幕
+                    gameOver();
+                }
             }
         }
 
-        // 开始游戏
-        function startGame() {
-            startScreen.style.display = 'none';
-            gameOverScreen.style.display = 'none';
-            instructions.style.display = 'block';
-            initGame();
+        // 检查是否成功
+        function checkSuccess() {
+            const currentPlatform = platforms[currentPlatformIndex];
+            const nextPlatform = platforms[currentPlatformIndex + 1];
+            const stickEndX = stick.x + stick.length;
+
+            if (stickEndX >= nextPlatform.x &&
+                stickEndX <= nextPlatform.x + nextPlatform.width + 10) {
+                // 成功
+            } else {
+                // 失败，角色会继续走直到掉下去
+            }
+        }
+
+        // 游戏结束
+        function gameOver() {
+            gameState = 'gameover';
+            finalScoreElement.textContent = score;
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('stickHeroHighScore', highScore);
+                highScoreElement.textContent = highScore;
+            }
+
+            gameOverElement.style.display = 'block';
+        }
+
+        // 重新开始
+        function restart() {
+            score = 0;
+            gameOverElement.style.display = 'none';
+            gameState = 'waiting';
+            initPlatforms();
+            resetStick();
         }
 
         // 事件监听
-        let isHolding = false;
+        let isPressing = false;
 
-        function handleStart(e) {
-            e.preventDefault();
-            if (gameState === 'playing' && stick && stick.state === 'growing') {
-                isHolding = true;
+        function startPress() {
+            if (gameState === 'waiting') {
+                gameState = 'stretching';
+                isPressing = true;
             }
         }
 
-        function handleEnd(e) {
-            e.preventDefault();
-            if (gameState === 'playing' && isHolding && stick) {
-                isHolding = false;
-                stick.fall();
+        function endPress() {
+            if (gameState === 'stretching') {
+                gameState = 'falling';
+                isPressing = false;
             }
         }
-
-        function handleMove(e) {
-            e.preventDefault();
-            if (isHolding && stick) {
-                stick.grow();
-            }
-        }
-
-        // 触摸事件
-        canvas.addEventListener('touchstart', handleStart, { passive: false });
-        canvas.addEventListener('touchend', handleEnd, { passive: false });
-        canvas.addEventListener('touchmove', handleMove, { passive: false });
 
         // 鼠标事件
-        canvas.addEventListener('mousedown', handleStart);
-        canvas.addEventListener('mouseup', handleEnd);
-        canvas.addEventListener('mousemove', (e) => {
-            if (isHolding && stick) {
-                stick.grow();
+        canvas.addEventListener('mousedown', startPress);
+        canvas.addEventListener('mouseup', endPress);
+        canvas.addEventListener('mouseleave', endPress);
+
+        // 触摸事件
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startPress();
+        });
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            endPress();
+        });
+
+        // 键盘事件
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !isPressing) {
+                startPress();
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') {
+                endPress();
             }
         });
 
-        // 按钮事件
-        startBtn.addEventListener('click', startGame);
-        restartBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restart);
 
-        // 定时器让棍子持续生长
-        setInterval(() => {
-            if (isHolding && stick) {
-                stick.grow();
-            }
-        }, 16);
-
-        // 开始游戏循环
+        // 初始化游戏
+        initPlatforms();
+        resetStick();
         gameLoop();
     </script>
 </body>
